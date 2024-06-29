@@ -1,0 +1,44 @@
+{
+  "schemaNamespace" : "TaddyPodcast",
+  "schemaDownload": {
+    "downloadMethod": {
+        "introspection": {
+            "endpointURL": "https://api.taddy.org",
+            "httpMethod": {
+                "POST": {}
+            },
+            "includeDeprecatedInputValues": false,
+            "outputFormat": "SDL"
+        }
+    },
+    "downloadTimeout": 60,
+    "headers": [],
+    "outputPath": "./PodsLab/GraphQL/schema.graphqls"
+  },
+  "input" : {
+    "operationSearchPaths" : [
+      "**/*.graphql"
+    ],
+    "schemaSearchPaths" : [
+      "**/*.graphqls"
+    ]
+  },
+  "output" : {
+    "testMocks" : {
+      "none" : {
+      }
+    },
+    "schemaTypes" : {
+      "path" : "./PodsLab/GraphQL/generated/",
+      "moduleType" : {
+        "embeddedInTarget" : {
+          "name" : "PodsLab"
+        }
+      }
+    },
+    "operations" : {
+      "inSchemaModule" : {
+      }
+    }
+  }
+}

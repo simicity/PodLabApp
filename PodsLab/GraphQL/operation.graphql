@@ -1,0 +1,46 @@
+query SearchPodcastEpisodes($searchValue: String!, $genres: [Genre!]!) {
+  searchForTerm(
+    term: $searchValue
+    includeSearchOperator: OR
+    filterForTypes: PODCASTEPISODE
+    sortByDatePublished: LATEST
+    filterForGenres: $genres
+    filterForLanguages: [ENGLISH]
+    page: 1
+    searchResultsBoostType: BOOST_POPULARITY_A_LOT
+  ) {
+    searchId
+    podcastEpisodes {
+      uuid
+      datePublished
+      name
+      description(shouldStripHtmlTags: true)
+      subtitle
+      audioUrl
+      duration
+      podcastSeries {
+        uuid
+        name
+        description
+        imageUrl
+      }
+    }
+  }
+}
+
+query GetPodcastSeries($uuid: ID!) {
+  getPodcastSeries(uuid: $uuid) {
+    uuid
+    name
+    description
+    imageUrl
+    episodes(page: 1) {
+      uuid
+      datePublished
+      name
+      description(shouldStripHtmlTags: true)
+      audioUrl
+    }
+  }
+}
+
