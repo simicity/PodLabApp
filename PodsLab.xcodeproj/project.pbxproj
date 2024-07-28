@@ -49,6 +49,8 @@
 		2773EAD22C1FA1B20090BDF5 /* PodcastSeriesDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2773EAD12C1FA1B20090BDF5 /* PodcastSeriesDetailView.swift */; };
 		2773EAD42C1FDA0A0090BDF5 /* DoubleExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2773EAD32C1FDA0A0090BDF5 /* DoubleExtension.swift */; };
 		2773EAD82C3094670090BDF5 /* SavedPodcastEpisodeList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2773EAD72C3094670090BDF5 /* SavedPodcastEpisodeList.swift */; };
+		2773EADA2C31E6950090BDF5 /* SavedPodcastEpisode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2773EAD92C31E6950090BDF5 /* SavedPodcastEpisode.swift */; };
+		2773EADE2C32032B0090BDF5 /* SavedPodcastSeries.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2773EADD2C32032B0090BDF5 /* SavedPodcastSeries.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -93,6 +95,8 @@
 		2773EAD32C1FDA0A0090BDF5 /* DoubleExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoubleExtension.swift; sourceTree = "<group>"; };
 		2773EAD52C3091620090BDF5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		2773EAD72C3094670090BDF5 /* SavedPodcastEpisodeList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedPodcastEpisodeList.swift; sourceTree = "<group>"; };
+		2773EAD92C31E6950090BDF5 /* SavedPodcastEpisode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedPodcastEpisode.swift; sourceTree = "<group>"; };
+		2773EADD2C32032B0090BDF5 /* SavedPodcastSeries.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedPodcastSeries.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -195,6 +199,8 @@
 			children = (
 				2773EA582BF9B5C70090BDF5 /* PodcastEpisode.swift */,
 				2773EA5A2BF9B5F20090BDF5 /* PodcastSeries.swift */,
+				2773EAD92C31E6950090BDF5 /* SavedPodcastEpisode.swift */,
+				2773EADD2C32032B0090BDF5 /* SavedPodcastSeries.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -429,6 +435,7 @@
 				2773EAA12BFB115E0090BDF5 /* Query.graphql.swift in Sources */,
 				2773EAB92C01C80C0090BDF5 /* PodcastEpisodeView.swift in Sources */,
 				2773EAA32BFB115E0090BDF5 /* SchemaConfiguration.swift in Sources */,
+				2773EADA2C31E6950090BDF5 /* SavedPodcastEpisode.swift in Sources */,
 				2773EAA42BFB115E0090BDF5 /* SchemaMetadata.graphql.swift in Sources */,
 				2773EABB2C0303F40090BDF5 /* SearchBar.swift in Sources */,
 				2773EA2B2BF93AFF0090BDF5 /* PodsLabApp.swift in Sources */,
@@ -444,6 +451,7 @@
 				2773EAC82C0EF2720090BDF5 /* PodcastEpisodeDefaultThumbnail.swift in Sources */,
 				2773EAD82C3094670090BDF5 /* SavedPodcastEpisodeList.swift in Sources */,
 				2773EA9F2BFB115E0090BDF5 /* PodcastEpisode.graphql.swift in Sources */,
+				2773EADE2C32032B0090BDF5 /* SavedPodcastSeries.swift in Sources */,
 				2773EAC42C0E9B8E0090BDF5 /* FloatingAudioPlayer.swift in Sources */,
 				2773EA9E2BFB115E0090BDF5 /* Genre.graphql.swift in Sources */,
 				2773EA5B2BF9B5F20090BDF5 /* PodcastSeries.swift in Sources */,

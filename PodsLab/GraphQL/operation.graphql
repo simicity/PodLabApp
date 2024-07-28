@@ -1,4 +1,4 @@
-query SearchPodcastEpisodes($searchValue: String!, $genres: [Genre!]!) {
+query SearchPodcastEpisodes($searchValue: String!, $genres: [Genre!]!, $page: Int!) {
   searchForTerm(
     term: $searchValue
     includeSearchOperator: OR
@@ -6,7 +6,7 @@ query SearchPodcastEpisodes($searchValue: String!, $genres: [Genre!]!) {
     sortByDatePublished: LATEST
     filterForGenres: $genres
     filterForLanguages: [ENGLISH]
-    page: 1
+    page: $page
     searchResultsBoostType: BOOST_POPULARITY_A_LOT
   ) {
     searchId

@@ -10,6 +10,7 @@ import SwiftUI
 struct SearchBar: View {
     @Environment(PodcastEpisodeListViewModel.self) private var viewModel
     @Binding var showSheet: Bool
+    @Binding var isLoading: Bool
     @FocusState private var textFieldIsFocused: Bool
 
     var body: some View {
@@ -18,6 +19,7 @@ struct SearchBar: View {
             Button {
                 textFieldIsFocused = false
                 showSheet = false
+                isLoading = true
                 viewModel.searchPodcastEpisodes()
             } label: {
                 Image(systemName: "magnifyingglass")
@@ -45,6 +47,7 @@ struct SearchBar: View {
                     textFieldIsFocused = false
                     if !viewModel.searchTerm.isEmpty {
                         showSheet = false
+                        isLoading = true
                         viewModel.searchPodcastEpisodes()
                     }
                 }
@@ -60,6 +63,6 @@ struct SearchBar: View {
 }
 
 #Preview {
-    SearchBar(showSheet: .constant(false))
+    SearchBar(showSheet: .constant(false), isLoading: .constant(false))
         .environment(PodcastEpisodeListViewModel())
 }

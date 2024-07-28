@@ -59,17 +59,9 @@ struct PodcastEpisodeView: View {
                     viewModel.selectedPodcastEpisode = episode
                     switch episode.playbackStatus {
                     case .stop, .pause:
-                        do {
-                            try AudioManager.shared.play(url: viewModel.selectedPodcastEpisode!.audioUrl, seekTo: viewModel.selectedPodcastEpisode!.playbackProgress)
-                            viewModel.startPlaybackProgressMonitor()
-                            viewModel.selectedPodcastEpisode!.playbackStatus = .play
-                        } catch {
-                            print("Failed playing the audio url")
-                        }
+                        viewModel.playSelectedEpisode()
                     case .play:
-                        AudioManager.shared.pause()
-                        viewModel.stopPlaybackProgressMonitor()
-                        viewModel.selectedPodcastEpisode!.playbackStatus = .pause
+                        viewModel.pauseSelectedEpisode()
                     }
                 } label: {
                     HStack {

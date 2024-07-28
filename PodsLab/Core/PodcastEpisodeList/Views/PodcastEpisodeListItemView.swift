@@ -10,11 +10,12 @@ import SwiftUI
 struct PodcastEpisodeListItemView: View {
     @Environment (PodcastEpisodeListViewModel.self) private var viewModel
     let episode: PodcastEpisode
+    let thumbnailSize: CGFloat = 80
 
     var body: some View {
         HStack(spacing: 20) {
             if episode.podcastSeries.imageUrl.isEmpty {
-                PodcastEpisodeDefaultThumbnail(width: 80, height: 80)
+                PodcastEpisodeDefaultThumbnail(width: thumbnailSize, height: thumbnailSize)
             } else {
                 AsyncImage(url: URL(string: episode.podcastSeries.imageUrl)) { phase in
                     if let image = phase.image {
@@ -26,7 +27,7 @@ struct PodcastEpisodeListItemView: View {
                         ProgressView()
                     }
                 }
-                .frame(width: 80, height: 80)
+                .frame(width: thumbnailSize, height: thumbnailSize)
                 .clipShape(RoundedRectangle(cornerRadius: 5))
             }
             
@@ -45,10 +46,9 @@ struct PodcastEpisodeListItemView: View {
                     .tint(.primary)
                 
                 Text(episode.subtitle)
-                    .font(.headline)
+                    .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
-                    .tint(.secondary)
 
                 Button {
                     if let currentEpisode = viewModel.selectedPodcastEpisode {
@@ -61,17 +61,9 @@ struct PodcastEpisodeListItemView: View {
                     viewModel.selectedPodcastEpisode = episode
                     switch viewModel.selectedPodcastEpisode!.playbackStatus {
                     case .stop, .pause:
-                        do {
-                            try AudioManager.shared.play(url: viewModel.selectedPodcastEpisode!.audioUrl, seekTo: viewModel.selectedPodcastEpisode!.playbackProgress)
-                            viewModel.startPlaybackProgressMonitor()
-                            viewModel.selectedPodcastEpisode!.playbackStatus = .play
-                        } catch {
-                            print("Failed playing the audio url")
-                        }
+                        viewModel.playSelectedEpisode()
                     case .play:
-                        AudioManager.shared.pause()
-                        viewModel.stopPlaybackProgressMonitor()
-                        viewModel.selectedPodcastEpisode!.playbackStatus = .pause
+                        viewModel.pauseSelectedEpisode()
                     }
                 } label: {
                     HStack {
@@ -94,7 +86,7 @@ struct PodcastEpisodeListItemView: View {
                     .font(.footnote)
                     .tint(.secondary)
                 }
-                .padding(.vertical, 5)
+                .padding(.vertical, 4)
                 .padding(.horizontal, 10)
                 .background(Color(UIColor.systemGray5))
                 .clipShape(Capsule())

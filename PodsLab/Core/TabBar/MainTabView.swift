@@ -37,6 +37,7 @@ struct MainTabView: View {
                     .tag(0)
                 
                 SavedPodcastEpisodeList()
+                    .environment(viewModel)
                     .tabItem {
                         Label("Saved", systemImage: TabItems.list.imageName)
                             .fontWeight(.bold)

@@ -22,7 +22,11 @@ import SwiftUI
     private let podcastDataService = PodcastDataService()
     private var cancellables = Set<AnyCancellable>()
     
-    func searchPodcastEpisodes() {
+    func resetEpisodeList() {
+        podcastEpisodes.removeAll()
+    }
+
+    func searchPodcastEpisodes(page: Int = 1) {
         var filteredGenres: [TaddyPodcast.Genre] = []
         
         for (index, genre) in GenreFilter.allCases.enumerated() {
@@ -31,11 +35,11 @@ import SwiftUI
             }
         }
         
-        podcastDataService.searchPodcastEpisodes(searchTerm: searchTerm, genres: filteredGenres) { [weak self] result in
+        podcastDataService.searchPodcastEpisodes(searchTerm: searchTerm, genres: filteredGenres, page: page) { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let episodes):
-                    self?.podcastEpisodes = episodes
+                    self?.podcastEpisodes.append(contentsOf: episodes)
                 case .failure(let error):
                     print(error.localizedDescription)
                     self?.errorMessage = error.localizedDescription
@@ -44,12 +48,44 @@ import SwiftUI
         }
     }
     
+    func playSelectedEpisode() {
+        do {
+            try AudioManager.shared.play(url: selectedPodcastEpisode!.audioUrl, seekTo: isSelectedEpisodeEnded() ? 0.0 : selectedPodcastEpisode?.playbackProgress ?? 0.0)
+            startPlaybackProgressMonitor()
+            if let episode = selectedPodcastEpisode {
+                episode.playbackStatus = .play
+            }
+
+        } catch {
+            print("Failed playing the audio url")
+        }
+    }
+    
+    func pauseSelectedEpisode() {
+        AudioManager.shared.pause()
+        stopPlaybackProgressMonitor()
+        if let episode = selectedPodcastEpisode {
+            episode.playbackStatus = .pause
+        }
+    }
+    
+    func isSelectedEpisodeEnded() -> Bool {
+        guard let episode = selectedPodcastEpisode else {
+            return true
+        }
+        return Int(episode.playbackProgress) >= episode.duration
+    }
+    
     func startPlaybackProgressMonitor() {
         AudioManager.shared.addPeriodicTimeObserver() { [weak self] progress in
             guard let self else { return }
             if let episode = selectedPodcastEpisode {
                 episode.playbackProgress = progress
                 episode.playbackProgressRatio = CGFloat(progress / Double(episode.duration))
+                if isSelectedEpisodeEnded() {
+                    stopPlaybackProgressMonitor()
+                    episode.playbackStatus = .stop
+                }
             }
         }
     }

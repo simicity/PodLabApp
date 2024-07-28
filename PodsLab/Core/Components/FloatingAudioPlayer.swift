@@ -9,14 +9,16 @@ import SwiftUI
 
 struct FloatingAudioPlayer: View {
     @Environment (PodcastEpisodeListViewModel.self) private var viewModel
+    @State var isDragging: Bool = false
+    let thumbnailSize: CGFloat = 35
 
-    var body: some View {        
+    var body: some View {
         @Bindable var viewModel = viewModel
 
         HStack {
             if let episode = viewModel.selectedPodcastEpisode {
                 if episode.podcastSeries.imageUrl.isEmpty {
-                    PodcastEpisodeDefaultThumbnail(width: 55, height: 55)
+                    PodcastEpisodeDefaultThumbnail(width: thumbnailSize, height: thumbnailSize)
                 } else {
                     AsyncImage(url: URL(string: episode.podcastSeries.imageUrl)) { phase in
                         if let image = phase.image {
@@ -28,7 +30,7 @@ struct FloatingAudioPlayer: View {
                             ProgressView()
                         }
                     }
-                    .frame(width: 50, height: 50)
+                    .frame(width: thumbnailSize, height: thumbnailSize)
                     .clipShape(RoundedRectangle(cornerRadius: 5))
                 }
 
@@ -40,6 +42,7 @@ struct FloatingAudioPlayer: View {
                     Text((viewModel.selectedPodcastEpisode?.playbackProgress ?? 0).asDurationString())
                         .foregroundStyle(.secondary)
                 }
+                .font(.subheadline)
                 .padding(.leading, 5)
 
                 Spacer()
@@ -47,17 +50,9 @@ struct FloatingAudioPlayer: View {
                 Button {
                     switch episode.playbackStatus {
                     case .stop, .pause:
-                        do {
-                            try AudioManager.shared.play(url: viewModel.selectedPodcastEpisode!.audioUrl, seekTo: viewModel.selectedPodcastEpisode!.playbackProgress)
-                            viewModel.startPlaybackProgressMonitor()
-                            episode.playbackStatus = .play
-                        } catch {
-                            print("Failed playing the audio url")
-                        }
+                        viewModel.playSelectedEpisode()
                     case .play:
-                        AudioManager.shared.pause()
-                        viewModel.stopPlaybackProgressMonitor()
-                        episode.playbackStatus = .pause
+                        viewModel.pauseSelectedEpisode()
                     }
                 } label: {
                     Image(systemName: episode.playbackStatus.icon)
@@ -105,13 +100,11 @@ struct FloatingAudioPlayer: View {
 extension FloatingAudioPlayer {
     var bigAudioPlayer: some View {
         GeometryReader { geometry in
-            VStack {
+            VStack(alignment: .center) {
                 Spacer()
 
-                if viewModel.selectedPodcastEpisode == nil || viewModel.selectedPodcastEpisode!.podcastSeries.imageUrl.isEmpty {
-                    PodcastEpisodeDefaultThumbnail(width: 150, height: 150)
-                } else {
-                    AsyncImage(url: URL(string: viewModel.selectedPodcastEpisode!.podcastSeries.imageUrl)) { phase in
+                if let imageUrl = viewModel.selectedPodcastEpisode?.podcastSeries.imageUrl {
+                    AsyncImage(url: URL(string: imageUrl)) { phase in
                         if let image = phase.image {
                             image.resizable()
                         } else if phase.error != nil {
@@ -123,6 +116,8 @@ extension FloatingAudioPlayer {
                     }
                     .frame(width: 150, height: 150)
                     .clipShape(RoundedRectangle(cornerRadius: 5))
+                } else {
+                    PodcastEpisodeDefaultThumbnail(width: 150, height: 150)
                 }
                 
                 Text(viewModel.selectedPodcastEpisode?.name ?? "No Podcast selected")
@@ -149,6 +144,27 @@ extension FloatingAudioPlayer {
                             .foregroundStyle(.darkAccent)
                     }
                     .padding(.bottom, 10)
+                    .scaleEffect(x: isDragging ? 1.03 : 1.0, y: isDragging ? 1.35 : 1.0)
+                    .gesture(
+                        DragGesture()
+                            .onChanged { value in
+                                let dragLocation = value.location.x
+                                viewModel.stopPlaybackProgressMonitor()
+                                episode.playbackProgressRatio = CGFloat(max(0, min(1, dragLocation / geometry.size.width)))
+                                isDragging = true
+                            }
+                            .onEnded { _ in
+                                AudioManager.shared.pause()
+                                episode.playbackProgress = Double(episode.duration) * episode.playbackProgressRatio
+                                do {
+                                    try AudioManager.shared.play(url: episode.audioUrl, seekTo: episode.playbackProgress)
+                                } catch {
+                                    episode.playbackStatus = .stop
+                                }
+                                isDragging = false
+                                viewModel.startPlaybackProgressMonitor()
+                            }
+                    )
                     
                     HStack {
                         Text(episode.playbackProgress.asDurationString())
@@ -169,17 +185,9 @@ extension FloatingAudioPlayer {
                         Button {
                             switch episode.playbackStatus {
                             case .stop, .pause:
-                                do {
-                                    try AudioManager.shared.play(url: viewModel.selectedPodcastEpisode!.audioUrl, seekTo: viewModel.selectedPodcastEpisode!.playbackProgress)
-                                    viewModel.startPlaybackProgressMonitor()
-                                    viewModel.selectedPodcastEpisode!.playbackStatus = .play
-                                } catch {
-                                    print("Failed playing the audio url")
-                                }
+                                viewModel.playSelectedEpisode()
                             case .play:
-                                AudioManager.shared.pause()
-                                viewModel.stopPlaybackProgressMonitor()
-                                episode.playbackStatus = .pause
+                                viewModel.pauseSelectedEpisode()
                             }
                         } label: {
                             Image(systemName: episode.playbackStatus.icon)
@@ -199,9 +207,9 @@ extension FloatingAudioPlayer {
 
                 Spacer()
             }
-            .padding()
-            .background(Color(UIColor.background))
-            .presentationDragIndicator(.visible)
         }
+        .padding()
+        .background(Color(UIColor.background))
+        .presentationDragIndicator(.visible)
     }
 }

@@ -8,23 +8,27 @@ extension TaddyPodcast {
     static let operationName: String = "SearchPodcastEpisodes"
     static let operationDocument: ApolloAPI.OperationDocument = .init(
       definition: .init(
-        #"query SearchPodcastEpisodes($searchValue: String!, $genres: [Genre!]!) { searchForTerm( term: $searchValue includeSearchOperator: OR filterForTypes: PODCASTEPISODE sortByDatePublished: LATEST filterForGenres: $genres filterForLanguages: [ENGLISH] page: 1 searchResultsBoostType: BOOST_POPULARITY_A_LOT ) { __typename searchId podcastEpisodes { __typename uuid datePublished name description(shouldStripHtmlTags: true) subtitle audioUrl duration podcastSeries { __typename uuid name description imageUrl } } } }"#
+        #"query SearchPodcastEpisodes($searchValue: String!, $genres: [Genre!]!, $page: Int!) { searchForTerm( term: $searchValue includeSearchOperator: OR filterForTypes: PODCASTEPISODE sortByDatePublished: LATEST filterForGenres: $genres filterForLanguages: [ENGLISH] page: $page searchResultsBoostType: BOOST_POPULARITY_A_LOT ) { __typename searchId podcastEpisodes { __typename uuid datePublished name description(shouldStripHtmlTags: true) subtitle audioUrl duration podcastSeries { __typename uuid name description imageUrl } } } }"#
       ))
 
     public var searchValue: String
     public var genres: [GraphQLEnum<Genre>]
+    public var page: Int
 
     public init(
       searchValue: String,
-      genres: [GraphQLEnum<Genre>]
+      genres: [GraphQLEnum<Genre>],
+      page: Int
     ) {
       self.searchValue = searchValue
       self.genres = genres
+      self.page = page
     }
 
     public var __variables: Variables? { [
       "searchValue": searchValue,
-      "genres": genres
+      "genres": genres,
+      "page": page
     ] }
 
     struct Data: TaddyPodcast.SelectionSet {
@@ -40,7 +44,7 @@ extension TaddyPodcast {
           "sortByDatePublished": "LATEST",
           "filterForGenres": .variable("genres"),
           "filterForLanguages": ["ENGLISH"],
-          "page": 1,
+          "page": .variable("page"),
           "searchResultsBoostType": "BOOST_POPULARITY_A_LOT"
         ]),
       ] }

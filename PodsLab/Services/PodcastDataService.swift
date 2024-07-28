@@ -9,8 +9,8 @@ import Foundation
 import Apollo
 
 class PodcastDataService {
-    func searchPodcastEpisodes(searchTerm: String, genres: [TaddyPodcast.Genre], completion: @escaping (Result<[PodcastEpisode], Error>) -> Void) {
-        NetworkManager.shared.apollo.fetch(query: TaddyPodcast.SearchPodcastEpisodesQuery(searchValue: searchTerm, genres: genres.map { GraphQLEnum($0) })) { result in
+    func searchPodcastEpisodes(searchTerm: String, genres: [TaddyPodcast.Genre], page: Int, completion: @escaping (Result<[PodcastEpisode], Error>) -> Void) {
+        NetworkManager.shared.apollo.fetch(query: TaddyPodcast.SearchPodcastEpisodesQuery(searchValue: searchTerm, genres: genres.map { GraphQLEnum($0) }, page: page)) { result in
             switch result {
             case .success(let graphQLResult):
                 var episodes: [PodcastEpisode] = []
@@ -89,6 +89,11 @@ class PodcastDataService {
             }
         }
     }
+}
+
+enum PodcastDataServiceConstants {
+    static let maxSearchGenreNum = 25
+    static let maxSearchPageNum = 20
 }
 
 enum NetworkingServiceError: Error {

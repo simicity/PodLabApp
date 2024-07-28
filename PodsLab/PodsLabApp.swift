@@ -13,5 +13,6 @@ struct PodsLabApp: App {
         WindowGroup {
             MainTabView()
         }
+        .modelContainer(for: [SavedPodcastEpisode.self])
     }
 }
