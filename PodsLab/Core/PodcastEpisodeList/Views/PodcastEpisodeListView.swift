@@ -109,6 +109,7 @@ struct PodcastEpisodeListView: View {
                         PodcastEpisodeView(episode: episode)
                             .navigationBarBackButtonHidden()
                     }
+                    .edgesIgnoringSafeArea(.bottom)
                 }
             }
             .background(Color(UIColor.background))

@@ -46,7 +46,15 @@ struct MainTabView: View {
                     .tag(1)
             }
             .tint(.accent)
-            .toolbarBackground(.ultraThinMaterial)
+            .onAppear {
+                let appearance = UITabBarAppearance()
+                appearance.backgroundEffect = UIBlurEffect(style: .systemUltraThinMaterial)
+                appearance.backgroundColor = UIColor(Color.background.opacity(0.1))
+                
+                UITabBar.appearance().standardAppearance = appearance
+                UITabBar.appearance().scrollEdgeAppearance = appearance
+                UITabBar.appearance().clipsToBounds = true
+            }
 
             FloatingAudioPlayer()
                 .environment(viewModel)
