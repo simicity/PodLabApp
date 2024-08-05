@@ -53,6 +53,8 @@ struct PodcastEpisodeListView: View {
                                         let episodeToDelete: SavedPodcastEpisode = savedEpisodes.filter { $0.id == episode.id }[0]
                                         let seriesIdToSearch: String = episode.podcastSeries.id
                                         context.delete(episodeToDelete)
+                                        viewModel.savedPodcastEpisodes = viewModel.savedPodcastEpisodes.filter { $0.id != episode.id
+                                        }
                                         var hasEpisodeOfSeries = false
                                         savedEpisodes.forEach { savedEpisode in
                                             if let id = savedEpisode.podcastSeries?.id {
@@ -81,8 +83,10 @@ struct PodcastEpisodeListView: View {
                                                 name: episode.podcastSeries.name,
                                                 seriesDescription: episode.podcastSeries.description,
                                                 imageUrl: episode.podcastSeries.imageUrl) : fetchedSeries[0],
-                                            playbackProgress: episode.playbackProgress, playbackProgressRatio: episode.playbackProgressRatio)
+                                            playbackProgress: episode.playbackProgress,
+                                            playbackProgressRatio: episode.playbackProgressRatio)
                                         context.insert(episodeToSave)
+                                        viewModel.savedPodcastEpisodes.append(episode)
                                     }
                                 } label: {
                                     VStack {
@@ -117,7 +121,7 @@ struct PodcastEpisodeListView: View {
             .refreshable {
                 viewModel.resetEpisodeList()
                 currentPage = 1
-//                viewModel.searchPodcastEpisodes(page: currentPage)
+                viewModel.searchPodcastEpisodes(page: currentPage)
             }
         }
     }

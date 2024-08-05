@@ -14,39 +14,19 @@ struct SavedPodcastEpisodeList: View {
     @Query var episodes: [SavedPodcastEpisode]
     @Query var series: [SavedPodcastSeries]
 
-    func isSavedEpisode(episodeId: String) -> Bool {
-        return !episodes.filter { $0.id == episodeId }.isEmpty
-    }
-
     var body: some View {
         NavigationStack {
             VStack {
-                if episodes.isEmpty {
+                if viewModel.savedPodcastEpisodes.isEmpty {
                     ContentUnavailableView("Saved Podcasts", systemImage: "mic.fill", description: Text("No saved episode"))
                 } else {
                     List {
-                        ForEach(episodes) { episode in
+                        ForEach(Array(viewModel.savedPodcastEpisodes.enumerated()), id: \.offset) { index, episode in
                             ZStack {
-                                let episodeToShow = PodcastEpisode(
-                                    id: episode.id,
-                                    name: episode.name,
-                                    description: episode.episodeDescription,
-                                    audioUrl: episode.audioUrl,
-                                    subtitle: episode.subtitle,
-                                    datePublished: episode.datePublished,
-                                    duration: episode.duration,
-                                    podcastSeries: PodcastSeries(
-                                        id: episode.podcastSeries?.id ?? "0",
-                                        name: episode.podcastSeries?.name ?? "",
-                                        description: episode.podcastSeries?.seriesDescription ?? "",
-                                        imageUrl: episode.podcastSeries?.imageUrl ?? ""
-                                    )
-                                )
-
-                                PodcastEpisodeListItemView(episode: episodeToShow)
+                                PodcastEpisodeListItemView(episode: episode)
                                     .environment(viewModel)
 
-                                NavigationLink(value: episodeToShow) {
+                                NavigationLink(value: episode) {
                                     EmptyView()
                                 }
                                 .opacity(0)
@@ -55,8 +35,11 @@ struct SavedPodcastEpisodeList: View {
                             .swipeActions(allowsFullSwipe: false) {
                                 Button {
                                     let episodeToDelete: SavedPodcastEpisode = episodes.filter { $0.id == episode.id }[0]
-                                    let seriesIdToSearch: String = episode.podcastSeries?.id ?? "0"
-                                    context.delete(episodeToDelete)
+                                    let seriesIdToSearch: String = episode.podcastSeries.id
+                                    withAnimation {
+                                        viewModel.savedPodcastEpisodes.remove(at: index)
+                                        context.delete(episodeToDelete)
+                                    }
                                     var hasEpisodeOfSeries = false
                                     episodes.forEach { episode in
                                         if let id = episode.podcastSeries?.id {

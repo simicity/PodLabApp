@@ -6,11 +6,24 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct PodcastEpisodeView: View {
     @Environment (PodcastEpisodeListViewModel.self) private var viewModel
     @Environment(\.dismiss) private var dismiss
+    @Query var savedEpisodes: [SavedPodcastEpisode]
     let episode: PodcastEpisode
+
+    func updateSavedEpisode() {
+        guard let selectedEpisode = viewModel.selectedPodcastEpisode else { return }
+        for savedEpisode in savedEpisodes {
+            if savedEpisode.id == selectedEpisode.id {
+                savedEpisode.playbackProgress = selectedEpisode.playbackProgress
+                savedEpisode.playbackProgressRatio = selectedEpisode.playbackProgressRatio
+                break
+            }
+        }
+    }
 
     var body: some View {
         ScrollView {
@@ -62,6 +75,7 @@ struct PodcastEpisodeView: View {
                         viewModel.playSelectedEpisode()
                     case .play:
                         viewModel.pauseSelectedEpisode()
+                        updateSavedEpisode()
                     }
                 } label: {
                     HStack {

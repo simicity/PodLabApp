@@ -6,11 +6,26 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct FloatingAudioPlayer: View {
     @Environment (PodcastEpisodeListViewModel.self) private var viewModel
+    @Environment(\.modelContext) private var context
+    @Query var savedEpisodes: [SavedPodcastEpisode]
     @State var isDragging: Bool = false
     let thumbnailSize: CGFloat = 35
+
+    func updateSavedEpisode() {
+        guard let selectedEpisode = viewModel.selectedPodcastEpisode else { return }
+        for savedEpisode in savedEpisodes {
+            if savedEpisode.id == selectedEpisode.id {
+                savedEpisode.playbackProgress = selectedEpisode.playbackProgress
+                savedEpisode.playbackProgressRatio = selectedEpisode.playbackProgressRatio
+                try? context.save()
+                break
+            }
+        }
+    }
 
     var body: some View {
         @Bindable var viewModel = viewModel
@@ -53,6 +68,7 @@ struct FloatingAudioPlayer: View {
                         viewModel.playSelectedEpisode()
                     case .play:
                         viewModel.pauseSelectedEpisode()
+                        updateSavedEpisode()
                     }
                 } label: {
                     Image(systemName: episode.playbackStatus.icon)
@@ -188,6 +204,7 @@ extension FloatingAudioPlayer {
                                 viewModel.playSelectedEpisode()
                             case .play:
                                 viewModel.pauseSelectedEpisode()
+                                updateSavedEpisode()
                             }
                         } label: {
                             Image(systemName: episode.playbackStatus.icon)

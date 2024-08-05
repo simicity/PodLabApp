@@ -10,7 +10,8 @@ import Combine
 import SwiftUI
 
 @Observable class PodcastEpisodeListViewModel {
-    var podcastEpisodes: [PodcastEpisode] = MockData.mockPodcastEpisodes//[]
+    var podcastEpisodes: [PodcastEpisode] = []//MockData.mockPodcastEpisodes//[]
+    var savedPodcastEpisodes: [PodcastEpisode] = []
     var errorMessage: String? = nil
 
     var selectedPodcastEpisode: PodcastEpisode?

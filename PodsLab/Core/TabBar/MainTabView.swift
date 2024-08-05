@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 enum TabItems: Int, CaseIterable{
     case home = 0
@@ -22,6 +23,7 @@ enum TabItems: Int, CaseIterable{
 }
 
 struct MainTabView: View {
+    @Query var savedEpisodes: [SavedPodcastEpisode]
     @State var viewModel = PodcastEpisodeListViewModel()
     @State var selectedTab = 0
 
@@ -59,6 +61,29 @@ struct MainTabView: View {
             FloatingAudioPlayer()
                 .environment(viewModel)
                 .offset(y: -50)
+        }
+        .onAppear {
+            viewModel.savedPodcastEpisodes.removeAll()
+            for episode in savedEpisodes {
+                let episodeToAdd = PodcastEpisode(
+                    id: episode.id,
+                    name: episode.name,
+                    description: episode.episodeDescription,
+                    audioUrl: episode.audioUrl,
+                    subtitle: episode.subtitle,
+                    datePublished: episode.datePublished,
+                    duration: episode.duration,
+                    podcastSeries: PodcastSeries(
+                        id: episode.podcastSeries?.id ?? "0",
+                        name: episode.podcastSeries?.name ?? "",
+                        description: episode.podcastSeries?.seriesDescription ?? "",
+                        imageUrl: episode.podcastSeries?.imageUrl ?? ""
+                    ),
+                    playbackProgress: episode.playbackProgress,
+                    playbackProgressRatio: episode.playbackProgressRatio
+                )
+                viewModel.savedPodcastEpisodes.append(episodeToAdd)
+            }
         }
     }
 }

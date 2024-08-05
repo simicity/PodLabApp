@@ -30,7 +30,7 @@ enum AudioPlaybackStatus {
     var playbackProgress: Double
     var playbackProgressRatio: CGFloat
     
-    init(id: String, name: String, description: String, audioUrl: String, subtitle: String, datePublished: Int, duration: Int, podcastSeries: PodcastSeries) {
+    init(id: String, name: String, description: String, audioUrl: String, subtitle: String, datePublished: Int, duration: Int, podcastSeries: PodcastSeries, playbackProgress: Double=0.0, playbackProgressRatio: CGFloat=0.0) {
         self.id = id
         self.name = name
         self.description = description
@@ -39,9 +39,9 @@ enum AudioPlaybackStatus {
         self.datePublished = datePublished
         self.duration = duration
         self.podcastSeries = podcastSeries
-        self.playbackStatus = .stop
-        self.playbackProgress = 0
-        self.playbackProgressRatio = 0.0
+        self.playbackStatus = playbackProgress == 0 ? .stop : .pause
+        self.playbackProgress = playbackProgress
+        self.playbackProgressRatio = playbackProgressRatio
     }
 
     static func == (lhs: PodcastEpisode, rhs: PodcastEpisode) -> Bool {

@@ -6,11 +6,24 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct PodcastEpisodeListItemView: View {
     @Environment (PodcastEpisodeListViewModel.self) private var viewModel
+    @Query var savedEpisodes: [SavedPodcastEpisode]
     let episode: PodcastEpisode
     let thumbnailSize: CGFloat = 80
+
+    func updateSavedEpisode() {
+        guard let selectedEpisode = viewModel.selectedPodcastEpisode else { return }
+        for savedEpisode in savedEpisodes {
+            if savedEpisode.id == selectedEpisode.id {
+                savedEpisode.playbackProgress = selectedEpisode.playbackProgress
+                savedEpisode.playbackProgressRatio = selectedEpisode.playbackProgressRatio
+                break
+            }
+        }
+    }
 
     var body: some View {
         HStack(spacing: 20) {
@@ -64,6 +77,7 @@ struct PodcastEpisodeListItemView: View {
                         viewModel.playSelectedEpisode()
                     case .play:
                         viewModel.pauseSelectedEpisode()
+                        updateSavedEpisode()
                     }
                 } label: {
                     HStack {
